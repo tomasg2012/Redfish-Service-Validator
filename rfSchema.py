@@ -77,7 +77,7 @@ def getSchemaDetails(SchemaType, SchemaURI):
     config = rst.currentService.config
     LocalOnly, SchemaLocation, ServiceOnly = config['localonlymode'], config['metadatafilepath'], config['servicemode']
 
-    scheme, netloc, path, params, query, fragment = urlparse(SchemaURI)
+    scheme, netloc, _path, _params, _query, _fragment = urlparse(SchemaURI)
     inService = scheme is None and netloc is None
 
     if (SchemaURI is not None and not LocalOnly) or (SchemaURI is not None and '/redfish/v1/$metadata' in SchemaURI):
@@ -88,7 +88,7 @@ def getSchemaDetails(SchemaType, SchemaURI):
             base_schema_uri, frag = tuple(SchemaURI.rsplit('#', 1))
         else:
             base_schema_uri, frag = SchemaURI, None
-        success, data, status, elapsed = rst.callResourceURI(base_schema_uri)
+        success, data, _status, _elapsed = rst.callResourceURI(base_schema_uri)
         if success:
             soup = BeautifulSoup(data, "xml")
             # if frag, look inside xml for real target as a reference
@@ -198,20 +198,6 @@ def getSchemaDetailsLocal(SchemaType, SchemaURI):
     return False, None, None
 
 
-def check_redfish_extensions_alias(name, namespace, alias):
-    """
-    Check that edmx:Include for Namespace RedfishExtensions has the expected 'Redfish' Alias attribute
-    :param name: the name of the resource
-    :param item: the edmx:Include item for RedfishExtensions
-    :return: bool
-    """
-    if alias is None or alias != 'Redfish':
-        msg = ("In the resource {}, the {} namespace must have an alias of 'Redfish'. The alias is {}. " +
-               "This may cause properties of the form [PropertyName]@Redfish.TermName to be unrecognized.")
-        rst.traverseLogger.error(msg.format(name, namespace,
-                             'missing' if alias is None else "'" + str(alias) + "'"))
-        return False
-    return True
 
 
 def getReferenceDetails(soup, metadata_dict=None, name='xml'):

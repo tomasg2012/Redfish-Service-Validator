@@ -3,15 +3,13 @@
 # License: BSD 3-Clause License. For full text see link: https://github.com/DMTF/Redfish-Service-Validator/blob/master/LICENSE.md
 
 import re
-import traverseService as rst
-
+import logging
 
 """
  Power.1.1.1.Power , Power.v1_0_0.Power
 """
-
 versionpattern = 'v[0-9]+_[0-9]+_[0-9]+'
-
+my_logger = logging.getLogger(__name__)
 
 def splitVersionString(version):
     v_payload = version
@@ -42,7 +40,6 @@ def compareMinVersion(version, min_version):
     return min_split < payload_split
 
 def navigateJsonFragment(decoded, URILink):
-    traverseLogger = rst.getLogger()
     if '#' in URILink:
         URIfragless, frag = tuple(URILink.rsplit('#', 1))
         fragNavigate = frag.split('/')
@@ -53,14 +50,14 @@ def navigateJsonFragment(decoded, URILink):
                 decoded = decoded.get(item)
             elif isinstance(decoded, list):
                 if not item.isdigit():
-                    traverseLogger.error("This URI ({}) is accessing an array, but this is not an index: {}".format(URILink, item))
+                    my_logger.error("This URI ({}) is accessing an array, but this is not an index: {}".format(URILink, item))
                     return None
                 if int(item) >= len(decoded):
-                    traverseLogger.error("This URI ({}) is accessing an array, but the index is too large for an array of size {}: {}".format(URILink, len(decoded), item))
+                    my_logger.error("This URI ({}) is accessing an array, but the index is too large for an array of size {}: {}".format(URILink, len(decoded), item))
                     return None
                 decoded = decoded[int(item)]
             else:
-                traverseLogger.error("This URI ({}) has resolved to an invalid object that is neither an array or dictionary".format(URILink))
+                my_logger.error("This URI ({}) has resolved to an invalid object that is neither an array or dictionary".format(URILink))
                 return None
     return decoded
 

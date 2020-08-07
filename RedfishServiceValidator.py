@@ -21,6 +21,8 @@ from tohtml import renderHtml, writeHtml, count_errors
 from metadata import setup_schema_pack
 
 from commonValidator import *
+ 
+import redfish
 
 tool_version = '1.3.8'
 
@@ -417,6 +419,8 @@ def main(arglist=None, direct_parser=None):
     argget.add_argument('--suffix', type=str, help='suffix of local schema files (for version differences)')
 
     args = argget.parse_args(arglist)
+
+    robj = redfish.redfish_client(base_url=host, username=user, password=pw)
 
     # set up config
     rst.ch.setLevel(VERBO_NUM if args.verbose_checks else logging.INFO if not args.v else logging.DEBUG)

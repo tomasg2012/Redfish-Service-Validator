@@ -241,12 +241,14 @@ def setConfig(cdict):
 
     return config, defaultkeys
 
+class serviceObj(Object):
+    def __init__(self, host, user, pw):
 
 class rfService():
     def __init__(self, config, default_entries=[]):
         traverseLogger.info('Setting up service...')
         global currentService
-        currentService = self
+        currentService = iself
         self.config = config
         self.proxies = dict()
         self.active = False
@@ -486,13 +488,15 @@ class rfService():
             return True, payload, -1, 0
         return False, None, statusCode, elapsed
 
-
+import redfish
 def callResourceURI(URILink):
     if currentService is None:
         traverseLogger.warn("The current service is not setup!  Program must configure the service before contacting URIs")
         raise RuntimeError
     else:
         return currentService.callResourceURI(URILink)
+
+
 
 
 def createResourceObject(name, uri, jsondata=None, typename=None, context=None, parent=None, isComplex=False, topVersion=None, top_of_resource=None):
